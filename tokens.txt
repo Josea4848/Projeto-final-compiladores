@@ -1,0 +1,11 @@
+O\puART
+Juliano\puNPROP
+é\puV
+bonito\puADJ
+!\pu!
+Maria\puNPROP
+correu\puV
+muito\puADV
+e\puKC
+morreu\puV
+!\pu!
