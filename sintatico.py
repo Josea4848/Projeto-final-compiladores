@@ -62,7 +62,7 @@ frase = "a nova geração de iPad foi apresentada pela Apple"
 #instanciando classe do analisador com a gramática
 analisador = Sintatico("gramatica.mrg", frase)
 
-#se returnar 0, a frase não está de acordo com a gramática
+#se retornar 0, a frase não está de acordo com a gramática
 if not analisador.analise_sintatica(frase):
    print("A frase não está de acordo com a gramática especificada!")
 
