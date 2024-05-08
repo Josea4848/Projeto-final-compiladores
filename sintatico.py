@@ -13,16 +13,26 @@ class Sintatico:
       gramatica_geral = gramatica_file.read()
       gramatica_particular = ""
       
-
+      #recebendo lista de tokens
       tokens = Categorizador().get_tokens(frase)
 
+      
+      #tratando tokens e adicionando na árvore
       for token, tipo in tokens:
-        if token == tipo:
-           continue
-        else: 
-           gramatica_particular += f"\n{tipo} -> '{token}'\n"
+         if token == tipo:
+            continue
+         else: 
+            if tipo == "N|EST":
+               tipo = "N"
+            elif tipo == "N|TEL":
+               tipo = "NUM"
+            elif tipo == "V|+":
+               tipo = "V"
 
-    
+         #contatena tokens como gramática produção -> 'terminal'
+         gramatica_particular += f"\n{tipo} -> '{token}'\n"
+
+
       gramatica_final = gramatica_geral + gramatica_particular 
       print(f"{gramatica_final}")
     
@@ -32,31 +42,27 @@ class Sintatico:
 
     # Função para realizar análise sintática de uma frase
     def analise_sintatica(self, frase):
-        
         tokens = nltk.word_tokenize(frase)
-
-        print(tokens)
-
-        trees = self.analisador.parse(tokens)
-
-        count = 0
-        for tree in trees:
-            if not tree:
+        arvores = self.analisador.parse(tokens)
+        contador = 0
+        
+        #iteração para as árvores
+        for arv in arvores:
+            if not arv:
                 continue
-            count += 1
-            tree.pretty_print()
-            tree.draw()
+            contador += 1
+            arv.pretty_print()
+            arv.draw()
   
-
-        return count
-
-#nova gera ̧c ̃ao de iPad foi apresentada por Apple
-
+        return contador
+    
+#definindo frase de entrada
 frase = "a nova geração de iPad foi apresentada pela Apple"
 
+#instanciando classe do analisador com a gramática
 analisador = Sintatico("gramatica.mrg", frase)
 
-if analisador.analise_sintatica(frase):
-   print("frase errada")
+#se returnar 0, a frase não está de acordo com a gramática
+if not analisador.analise_sintatica(frase):
+   print("A frase não está de acordo com a gramática especificada!")
 
-  #saí rapidão

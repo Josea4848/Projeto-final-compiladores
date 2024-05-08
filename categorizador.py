@@ -9,9 +9,11 @@ class Categorizador:
     self.pontuacoes = [".", ",", ":", ";", "!", "?", "..."]
     self.preposicoes = ["da", "do", "na", "no", "pelo", "pela"]
 
+  #gera tokens sem correção manual
   def tokenizar(self, frase):
     return self.teste_tagger.tag(word_tokenize(frase)) 
 
+  #retorna tokens com correções para pontuações e preposições
   def get_tokens(self, frase):
     lista_tokens = list()
 
@@ -24,11 +26,11 @@ class Categorizador:
       #Pontuação
       elif token in self.pontuacoes:
         tipo = "PUNCT"
-
       
       #adiciona token a lista de tokens formatada 
       subtoken = (token, tipo)
       lista_tokens.append(subtoken)
+    
     #retorna token
     return lista_tokens
 

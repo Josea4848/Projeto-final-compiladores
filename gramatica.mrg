@@ -1,21 +1,21 @@
 texto -> sentenca conectivos texto |
 
-sentenca -> sintagma_nominal sintagma_verbal 
+    sentenca -> sintagma_nominal sintagma_verbal 
 
-sintagma_nominal -> nomes adjunto_adnominal sintagma_nominal |
+    sintagma_nominal -> nomes adjunto_adnominal sintagma_nominal |
 
-nomes -> nome nomes |
+    nomes -> nome nomes |
 
-nome -> N | NPROP | PROSUB | PROPESS 
+    nome -> N | NPROP | PROSUB | PROPESS 
 
-adjunto_adnominal -> adjuntos adjunto_adnominal |
+    adjunto_adnominal -> adjuntos adjunto_adnominal |
 
-adjuntos -> ADJ | ADV | ADV-KS | ADV-KS-REL | ART | NUM | PDEN | PROADJ | PRO-KS | PRO-KS-REL | PREP
+    adjuntos -> ADJ | ADV | ADV-KS | ADV-KS-REL | ART | NUM | PDEN | PROADJ | PRO-KS | PRO-KS-REL | PREP
 
-sintagma_verbal -> verbos sintagma_nominal
+    sintagma_verbal -> verbos sintagma_nominal
 
-verbos -> VAUX PCP | VAUX V | V
+    verbos -> VAUX PCP | VAUX V | PCP | V
 
-conectivos -> conectivo conectivos |
+    conectivos -> conectivo conectivos |
 
-conectivo -> KC | KS
+    conectivo -> KC | KS
