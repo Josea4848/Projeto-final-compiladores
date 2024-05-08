@@ -1,119 +1,62 @@
-from item import Item
+from nltk import CFG
+from nltk import draw
+import nltk
+from nltk.parse import ChartParser
+import joblib
+from nltk import word_tokenize
+from categorizador import Categorizador
 from time import sleep
 
 class Sintatico:
-  def __init__(self, tokens):
-    self.tokens = tokens
-    self.posicao = 0 #posição do token
-    self.token = tokens[self.posicao]
-    self.erros =  list()
-    self.dados = ['ADJ', 'ADV', 'ADV-KS', 'ADV-KS-REL', 'ART', 'KC', 'KS', 'IN', 'N', 'NPROP', 'NUM', 'PCP', 'PDEN', 'PREP', 'PROADJ', 'PRO-KS', 'PROPESS', 'PRO-KS-REL', 'PROSUB', 'V', 'VAUX', 'CUR', 'EST', 'AP', 'DAD', 'TEL', 'DAT', 'HOR', '[' ,']', '+']
-    self.pontuacao = ['!', '.', '...']
-
-  #avança token
-  def next_token(self):
-    if self.posicao + 1 < len(self.tokens):
-      self.posicao += 1
-      self.token = tokens[self.posicao]
-
-  def texto(self):
-    self.sentenca()
-    #verifica último terminal, tem que terminar com pontuação
-    if self.token.getType() not in self.pontuacao:
-      self.erros.append("faltando pontuação")
-    else:
-      self.next_token()
-      #verifica se contém outro texto
-      if self.token.getType() in self.dados:
-        print(f"P: {self.token.getWord()}, T: {self.token.getType()}")
-        #sleep(5000)
-        self.texto()
-    
-    
-
-  def sentenca(self):
-    #setenca -> sintagma_nominal sintagma_verbal
-    self.sintagma_nominal()
-    print(f"INDO PRA VERBAL {self.token.getWord()}, {self.token.getType()}")
-    self.sintagma_verbal()
-    print("FIM KKKKK")
-
-  def sintagma_nominal(self):
-    #sintagma_nominal -> adjunto_adnominal nome adjunto_adnominal 
-    #nome -> N | NPROP | PROSUB | PROPESS
-    
-    
-    self.adjunto_adnominal()
-    print(f'sn -> token: "{self.token.getWord()}, {self.token.getType()}')
-
-    if self.token.getType() != 'N' and self.token.getType() != 'NPROP' and self.token.getType() != 'PROPESS' and self.token.getType() != 'PROSUB':
-      print(f"Palavra: {self.token.getWord()}, tipo: {self.token.getType()}")
-      self.erros.append(f"{self.token.getType()} faltando nome")
-    else:
-      self.next_token()
-      self.adjunto_adnominal()
+    def __init__(self, gramatica, frase):
+      gramatica_file = open("gramatica.mrg", "r")
+      gramatica_geral = gramatica_file.read()
+      gramatica_particular = ""
       
-      #sleep(5000)
 
-  def adjunto_adnominal(self):
-    #adjunto_adnominal -> adjuntos adjunto_adnominal
-    #adjuntos -> ADJ | ADV | ADV-KS | ADV-KS-REL | ART | NUM | PDEN | PROADJ | PRO-KS | PRO-KS-REL 
+      tokens = Categorizador().get_tokens(frase)
 
-    print(f'aa -> token: "{self.token.getWord()}, {self.token.getType()}')
-    adjuntos = ['ADJ', 'ADV', 'ADV-KS', 'ADV-KS-REL', 'ART', 'NUM', 'PDEN', 'PROADJ', 'PRO-KS', 'PRO-KS-REL']
-    
-    if self.token.getType() in adjuntos:
-      self.next_token()
-      print(f"KKKKKKKK {self.token.getWord()}, {self.token.getType()}")
+      for token, tipo in tokens:
+        if token == tipo:
+           continue
+        else: 
+           gramatica_particular += f"\n{tipo} -> '{token}'\n"
 
-  def sintagma_verbal(self):
-    #sintagma_verbal -V NP PP | V ADV
     
-    if(self.token.getType() != 'V'):
-      self.erros.append("faltando verbo")
-    else:    
-      self.next_token()
+      gramatica_final = gramatica_geral + gramatica_particular 
+      print(f"{gramatica_final}")
     
-    #breakpoint()
-    if(self.token.getType() not in ['ADV','ADJ']):
-      print("cheguei")
-      print(f'c -> token: "{self.token.getWord()}, {self.token.getType()}')
-      #sleep(5000)
-      self.sintagma_preposicional()
-    #Teve um advérbio (ADV) ou Adjetivo
-    elif self.token.getType() != 'ADJ':
-      print(f"HAHAHAHA {self.token.getWord()}")
-      self.next_token()
-      if self.token.getType() == "ART":
-        self.sintagma_nominal()
-    else:
-      print(f"FIM Palavra: {self.token.getWord()}, Type: {self.token.getType()}")
-      self.next_token()
-      print(f"FIM Palavra: {self.token.getWord()}, Type: {self.token.getType()}")
-    
-    if self.token.getType() == "KC":
-      self.next_token()
-      self.sintagma_verbal()
+      # Criando um analisador sintático a partir da gramática
+      self.gramatica = CFG.fromstring(gramatica_final)
+      self.analisador = nltk.ChartParser(self.gramatica)
 
-  def sintagma_preposicional(self):
-    print(f'sp -> token: "{self.token.getWord()}, {self.token.getType()}')
-    #sleep(5000)
-    #sintagma_preposicional -> P NP
-    if self.token.getType() == "PREP":
-      self.next_token()
-      self.sintagma_nominal()
+    # Função para realizar análise sintática de uma frase
+    def analise_sintatica(self, frase):
+        
+        tokens = nltk.word_tokenize(frase)
+
+        print(tokens)
+
+        trees = self.analisador.parse(tokens)
+
+        count = 0
+        for tree in trees:
+            if not tree:
+                continue
+            count += 1
+            tree.pretty_print()
+            tree.draw()
   
 
-tokens_file = open("tokens.txt", "r")
-tokens = list()
+        return count
 
-for line in tokens_file:
-  line = line.replace("\n", "")
-  sublist = line.split("\pu")
-  tokens.append(Item(sublist[0], sublist[1]))
+#nova gera ̧c ̃ao de iPad foi apresentada por Apple
 
-sintatico = Sintatico(tokens)
-sintatico.texto()
+frase = "a nova geração de iPad foi apresentada pela Apple"
 
-if len(sintatico.erros):
-  print(sintatico.erros)
+analisador = Sintatico("gramatica.mrg", frase)
+
+if analisador.analise_sintatica(frase):
+   print("frase errada")
+
+  #saí rapidão

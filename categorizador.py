@@ -1,18 +1,34 @@
 import joblib
 from item import Item
 from nltk import word_tokenize
+class Categorizador:
+  def __init__(self):
+    #importando modelo pt-br
+    folder = 'trained_POS_taggers/'
+    self.teste_tagger = joblib.load(folder+'POS_tagger_brill.pkl')
+    self.pontuacoes = [".", ",", ":", ";", "!", "?", "..."]
+    self.preposicoes = ["da", "do", "na", "no", "pelo", "pela"]
 
-#importando modelo pt-br
-folder = 'trained_POS_taggers/'
-teste_tagger = joblib.load(folder+'POS_tagger_brill.pkl')
+  def tokenizar(self, frase):
+    return self.teste_tagger.tag(word_tokenize(frase)) 
 
-phrase_file = open("frase.txt", "r")
+  def get_tokens(self, frase):
+    lista_tokens = list()
 
-frase = phrase_file.readline()
+    #a análise do modelo pode falhar em preposições, etc... necessitando de correção manual
+    for token, tipo in self.tokenizar(frase):
+      #Preposição
+      if token in self.preposicoes:
+        tipo = "PREP"
+      
+      #Pontuação
+      elif token in self.pontuacoes:
+        tipo = "PUNCT"
 
-#array de objetos item
-tokens = list()
+      
+      #adiciona token a lista de tokens formatada 
+      subtoken = (token, tipo)
+      lista_tokens.append(subtoken)
+    #retorna token
+    return lista_tokens
 
-#adiciona token a lista de tokens
-for token in teste_tagger.tag(word_tokenize(frase)):
-  tokens.append(Item(token[0], token[1]))
