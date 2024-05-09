@@ -38,5 +38,4 @@ class Pesquisador:
 
 pesquisador = Pesquisador()
 
-print(pesquisador.pesquisar("romulo calado pantaleão camara"))
 print(pesquisador.pesquisar("vasco"))
